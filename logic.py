@@ -10,10 +10,24 @@ class Pokemon:
         self.name = None
         self.img = None
         self.ability = None
+        self.hp = random.randint(50,150)
+        self.power = random.randint(30,175)
         if pokemon_trainer not in Pokemon.pokemons:
             Pokemon.pokemons[pokemon_trainer] = self
         else:
             self = Pokemon.pokemons[pokemon_trainer]
+    
+    async def attack(self, enemy):
+        if isinstance(enemy, Wizard):  # Periksa apakah musuh adalah tipe data Penyihir (instance dari kelas Penyihir)
+            kesempatan = random.randint(1,5)
+            if kesempatan == 1:
+                return "Pokemon penyihir menggunakan perisai dalam pertarungan"
+        if enemy.hp > self.power:
+            enemy.hp -= self.power
+            return f"Pertarungan @{self.pokemon_trainer} dengan @{enemy.pokemon_trainer}"
+        else:
+            enemy.hp = 0
+            return f"@{self.pokemon_trainer} menang melawan @{enemy.pokemon_trainer}!"
 
     async def get_name(self):
         # An asynchronous method to get the name of a pokémon via PokeAPI
@@ -31,7 +45,8 @@ class Pokemon:
         if not self.name:
             self.name = await self.get_name()  # Retrieving a name if it has not yet been uploaded
             self.ability = await self.show_ability()
-        return f"The name of your Pokémon: {self.name}"  # Returning the string with the Pokémon's name
+            
+        return f"The name of your Pokémon: {self.name} HP: {self.hp} Power: {self.power} ability: {self.ability}"  # Returning the string with the Pokémon's name
 
     async def show_img(self):
         url = f'https://pokeapi.co/api/v2/pokemon/{self.pokemon_number}'  # URL API for the request
@@ -56,3 +71,25 @@ class Pokemon:
                     return skills # Returning a Pokémon's name
                 else:
                     return "not found"
+class Wizard(Pokemon):
+    async def attack(self, enemy):
+         await super().attack(enemy)
+
+class Fighter(Pokemon):
+    async def attack(self, enemy):
+        kekuatan_super = random.randint(5,15)
+        self.kekuatan += kekuatan_super
+        hasil = await super().attack(enemy)
+        self.kekuatan -= kekuatan_super
+        return hasil + f"\nPetarung menggunakan serangan super dengan kekuatan:{kekuatan_super}"
+    
+# if __name__ == '__main__':
+#     wizard = Wizard("username1")
+#     fighter = Fighter("username2")
+
+#     print(wizard.info())
+#     print()
+#     print(fighter.info())
+#     print()
+#     print(fighter.attack(wizard))
+    
